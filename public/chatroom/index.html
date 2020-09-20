@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Chat Room</title>
+    <link href="../img/favicon.ico" rel="icon" />
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sign-in/">
+    <script src="https://webrtc.github.io/adapter/adapter-4.2.2.js"></script>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link href="../css/chatroom.css" rel="stylesheet">
+    <script>
+        let x = new URLSearchParams(window.location.search);
+        function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.replace(/\s+/g, '').split(';');
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          
+          if(c.indexOf(name) == 0)
+              return c.substring(name.length,c.length);
+        }
+        return "";
+      }
+      if(getCookie('username') === ''){
+        window.location.replace("https://hackmit-ec262.web.app/home.html");
+      }
+
+      if(x.get('id') === ''){
+        window.location.replace("https://hackmit-ec262.web.app/home.html");
+      }
+
+    </script>
+</head>
+<body>
+    <div class="row">
+        <div class="col-sm-2">
+            <a href="https://github.com/fjkal23jk/hackmit" target="_blank"><img class="mb-4" src="../img/icon.jpeg" alt="" width="72" height="72"></a>
+        </div>
+        <div class="col-sm-2">
+            <h1>ChatRoom</h1>
+        </div>
+        <div class="col-sm-8" style="text-align: center;">
+            <label class="switch mb-4" >
+                <input type="checkbox" id="mode">
+                <span class="slider"></span>
+              </label>
+        </div>
+    </div>
+    <h5 style="text-align: center;" id="roomInfo"></h5> 
+    
+    <div class="container-fluid text-center">
+        <div class="row content">
+          <div class="col-sm-8">
+            <div id="content">
+                <iframe width="100%" height="750px" id="video" src="about:blank" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <input type="text" id="yturl" name = "url" onkeypress="return runEnter(event)" style="width:80%;"> 
+                <button id="urlText" class="btn btn-primary" type="button">Submit</button>
+            </div>
+          </div>
+          <div class="col-sm-4 text-left">
+            <form>
+            <textarea id="chatroom" style="height:750px;width:100%;" readonly></textarea>
+            <input type="text" id="chat" name = "chat" onkeypress="return runScript(event)" style="width:80%;">
+            <button id="pushChat" class="btn btn-primary" type="button">Send</button>
+            </form>
+          </div>
+        </div>
+    </div>
+    <div id="myModal" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">URL</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Looks like you already have an video playing, do you still want to switch out?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+              <button type="button" id="submitURL" class="btn btn-primary">Yes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+    <script src="/__/firebase/7.19.1/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+      <!-- Add Firebase products that you want to use -->
+    <script src="/__/firebase/7.19.1/firebase-auth.js"></script>
+    <script src="/__/firebase/7.19.1/firebase-firestore.js"></script>
+    <script src="/__/firebase/7.19.1/firebase-functions.js"></script>
+
+    <!-- Initialize Firebase -->
+    <script src="/__/firebase/init.js"></script>
+
+
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous">
+    </script>
+    <script src="/src/chatroom.js"></script>
+</body>
+</html>

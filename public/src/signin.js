@@ -1,3 +1,5 @@
+let mode=0;
+document.cookie = "mode=" + mode + "; path=/";
 // get query string
 document.getElementById('signin').addEventListener('click', async function(){
     var urlParams = new URLSearchParams(window.location.search);
@@ -10,8 +12,8 @@ document.getElementById('signin').addEventListener('click', async function(){
             alert('wrong email/password');
         } else {
             // redirect 
-            
-            window.location.replace("http://localhost:5000/home.html");
+            document.cookie = "loggedIn=true; path=/";
+            window.location.replace("https://hackmit-ec262.web.app/home.html");
         }
     } else {
         const handleVerify = firebase.functions().httpsCallable('handleVerify');
@@ -19,8 +21,8 @@ document.getElementById('signin').addEventListener('click', async function(){
         if(verifyRes.data === 'false'){
             alert('wrong email/password');
         } else {
-            
-            window.location.replace("http://localhost:5000/home.html");
+            document.cookie = "loggedIn=true; path=/";
+            window.location.replace("https://hackmit-ec262.web.app/home.html");
         }
     }
 });
@@ -64,3 +66,11 @@ document.getElementById('signup').addEventListener('click', async function(){
         alert('email already exists');
     }
 });
+
+
+document.getElementById('mode').addEventListener('click', function(){
+    mode = mode === 0 ? 1 : 0;
+    document.cookie = "mode=" + mode;
+    console.log(mode);
+    document.documentElement.classList.toggle('dark-mode');
+})

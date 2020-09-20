@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico">
+    
 
-    <title>Signin Template for Bootstrap</title>
-
+    <title>Home Page</title>
+    <link href="img/favicon.ico" rel="icon" />
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sign-in/">
 
     <!-- Bootstrap core CSS -->
@@ -17,6 +17,22 @@
 
     <!-- Custom styles for this template -->
     <link href="./css/signin.css" rel="stylesheet">
+    <script>
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.replace(/\s+/g, '').split(';');
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          
+          if(c.indexOf(name) == 0)
+              return c.substring(name.length,c.length);
+        }
+        return "";
+      }
+      if(getCookie('loggedIn') === ''){
+        window.location.replace("https://hackmit-ec262.web.app/");
+      }
+    </script>
   </head>
 
   <body class="text-center">
@@ -24,7 +40,12 @@
     <div class="container">
         <div class="row">
             <div class="col col-lg-12">
-                <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+                <a href="https://github.com/fjkal23jk/hackmit" target="_blank"><img class="mb-4" src="./img/icon.jpeg" alt="" width="72" height="72"></a>
+                <br>
+                <label class="switch mb-4" >
+                  <input type="checkbox" id="mode">
+                  <span class="slider"></span>
+                </label>
             </div>
             <div class="col col-lg-6">
                 <form class="form-signin">
@@ -36,7 +57,7 @@
                     <label for="inputPassword" class="sr-only">Password</label>
                     <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
                     <button class="btn btn-lg btn-primary btn-block" type="button" id="joinroom">Join Room</button>
-                    <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+                    
                   </form>
             </div>
             <div class="col col-lg-6">
@@ -46,11 +67,8 @@
                     <input type="text" id="inputNewUserName" class="form-control" placeholder="Name" required autofocus>
                     <label for="inputNewRoomPassword" class="sr-only">Password</label>
                     <input type="password" id="inputNewRoomPassword" class="form-control" placeholder="Password" required>
-                    <label class="radio-inline"><input type="radio" name="optradio" value="video" checked> Video</label>
-                    <label class="radio-inline"><input type="radio" name="optradio" value="voice"> Voice</label>
-                    <label class="radio-inline"><input type="radio" name="optradio" value="chat"> Chat</label>
                     <button class="btn btn-lg btn-primary btn-block" type="button" id="createroom">Create Room</button>
-                    <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+                    
                   </form>
             </div>
         </div>

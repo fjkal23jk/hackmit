@@ -1,3 +1,5 @@
+
+let mode = getCookie('mode');
 document.getElementById('joinroom').addEventListener('click', async function(){
     const username = document.getElementById('inputUserName').value;
     const roomcode = document.getElementById('inputRoomNumber').value;
@@ -11,7 +13,8 @@ document.getElementById('joinroom').addEventListener('click', async function(){
     if(joinRes.data === 'false'){
         alert('incorrect room/password or not exist');
     } else {
-        alert('joined successfully');
+        document.cookie = "username="+ username +"; path=/chatroom";
+        window.location.replace("https://hackmit-ec262.web.app/chatroom/?id="+joinRes.data.specialCode);
     }
 
 })
@@ -19,22 +22,35 @@ document.getElementById('joinroom').addEventListener('click', async function(){
 document.getElementById('createroom').addEventListener('click', async function(){
     const username = document.getElementById('inputNewUserName').value;
     const password = document.getElementById('inputNewRoomPassword').value;
-    const rbs = document.querySelectorAll('input[name="optradio"]');
-    let selectedValue;
-    for (const rb of rbs) {
-        console.log(rb.value);
-        if (rb.checked) {
-            selectedValue = rb.value;
-            break;
-        }
-    }
-    console.log(selectedValue);
     if(username === '' || password === '' ) {
         alert('input everything');
         return;
     }
     const createroom = firebase.functions().httpsCallable('createroom');
-    let createRes = await createroom({username: username, password: password, type: selectedValue});
-    console.log(createRes);
-    alert('create room successfully');
+    let createRes = await createroom({username: username, password: password});
+    document.cookie = "username="+ username +"; path=/chatroom";
+    window.location.replace("https://hackmit-ec262.web.app/chatroom/?id="+createRes.data.specialCode);
+})
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.replace(/\s+/g, '').split(';');
+    for(var i=0; i<ca.length; i++) {
+      var c = ca[i];
+      
+      if(c.indexOf(name) == 0)
+          return c.substring(name.length,c.length);
+    }
+    return "";
+  }
+
+  if(getCookie('mode') !== '0'){
+    document.getElementById('mode').checked = true;
+    document.documentElement.classList.toggle('dark-mode');
+  }
+
+  document.getElementById('mode').addEventListener('click', function(){
+    mode = mode === 0 ? 1 : 0;
+    document.cookie = "mode=" + mode;
+    document.documentElement.classList.toggle('dark-mode');
 })
