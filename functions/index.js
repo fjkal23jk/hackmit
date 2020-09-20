@@ -2,19 +2,101 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 const FieldValue = admin.firestore.FieldValue;
+const { v4: uuidv4 } = require('uuid');
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+
+exports.getChatInfo = functions.https.onCall( async (data, context) => {
+    const specialCode = data.specialCode;
+    let roomSnapShot = await admin.firestore().collection('rooms').where('specialCode', '==', specialCode).get();
+    let roomID = '';
+    roomSnapShot.forEach(doc => {
+        roomID = doc.id;
+    });
+    let chatRef = await admin.firestore().collection('chats').doc(roomID).get();
+    let chat = chatRef.data().chat;
+    return {chat: chat};
+});
+
+exports.getRoomInfo = functions.https.onCall( async (data, context) => {
+    const specialCode = data.specialCode;
+    let roomSnapShot = await admin.firestore().collection('rooms').where('specialCode', '==', specialCode).get();
+    let roomID = '';
+    roomSnapShot.forEach(doc => {
+        roomID = doc.id;
+    });
+    let roomRef = await admin.firestore().collection('rooms').doc(roomID).get();
+    let videoRef = await admin.firestore().collection('videos').doc(roomID).get();
+    let roomPassword = roomRef.data().password;
+    return {roomID: roomID, roomPassword: roomPassword, url: videoRef.data().url};
+})
+
+
+exports.removeUser = functions.https.onCall( async (data, context) => {
+    const username = data.username;
+    const specialCode = data.specialCode;
+    let roomSnapShot = await admin.firestore().collection('rooms').where('specialCode', '==', specialCode).get();
+    let roomID = '';
+    roomSnapShot.forEach(doc => {
+        roomID = doc.id;
+    });
+    let roomRef = await admin.firestore().collection('rooms').doc(roomID).get();
+    let users = roomRef.data().users;
+    for(let i = 0; i < users.length; i++){
+        if(username === users[i]){
+            users.splice(i, 1);
+            break;
+        }
+    }
+    let leavers = roomRef.data().leavers;
+    leavers.push(username);
+    await admin.firestore().collection('rooms').doc(roomID).update({
+        users: users,
+        leavers: leavers
+    })
+    return `true`;
+})
+
+
+exports.insertMessage = functions.https.onCall(async (data, context) => {
+    const message = data.message;
+    const specialCode = data.specialCode;
+    const username = data.username;
+
+    let roomSnapShot = await admin.firestore().collection('rooms').where('specialCode', '==', specialCode).get();
+    let roomID = '';
+    roomSnapShot.forEach(doc => {
+        roomID = doc.id;
+    });
+
+    let roomRef = await admin.firestore().collection('chats').doc(roomID).get();
+    let chat = roomRef.data().chat;
+
+    chat.push({sender: username, message: message});
+    await admin.firestore().collection('chats').doc(roomID).update({
+        chat: chat
+    });
+
+    return `true`;
+})
+
+
+exports.insertVideo = functions.https.onCall( async (data, context) => {
+    const specialCode = data.specialCode;
+    const url = data.url;
+    let roomSnapShot = await admin.firestore().collection('rooms').where('specialCode', '==', specialCode).get();
+    let roomID = '';
+    roomSnapShot.forEach(doc => {
+        roomID = doc.id;
+    });
+    await admin.firestore().collection('videos').doc(roomID).update({
+        url: url
+    }); 
+    return `true`;
+})
 
 exports.createroom = functions.https.onCall( async (data, context) =>{
     const username = data.username;
     const password = data.password;
-    const type = data.type;
     var roomcode = Math.floor(100000 + Math.random() * 900000).toString() + 'a';
 
     let roomSnapShot = await admin.firestore().collection('rooms').doc(roomcode).get();
@@ -23,14 +105,23 @@ exports.createroom = functions.https.onCall( async (data, context) =>{
         // eslint-disable-next-line no-await-in-loop
         roomSnapShot = await admin.firestore().collection('rooms').doc(roomcode).get();
     }
-
+    const specialCode = uuidv4();
     await admin.firestore().collection('rooms').doc(roomcode).set({
-        chat: [],
         users: [username],
+        leavers: [],
         password: password,
-        type: type
+        specialCode: specialCode
+    });
+    await admin.firestore().collection('chats').doc(roomcode).set({
+        chat: [],
+        specialCode: specialCode
     })
-    return {roomcode: roomcode, password: password};
+
+    await admin.firestore().collection('videos').doc(roomcode).set({
+        url: '',
+        specialCode: specialCode
+    })
+    return {specialCode: specialCode, password: password};
 })
 
 exports.joinroom = functions.https.onCall(async (data, context) => {
@@ -46,7 +137,7 @@ exports.joinroom = functions.https.onCall(async (data, context) => {
     await admin.firestore().collection('rooms').doc(roomcode).update({
         users: userLists
     })
-    return `true`;
+    return {specialCode: roomSnapShot.data().specialCode};
 });
 
 exports.createuser = functions.https.onCall( async (data, context) => {
@@ -84,5 +175,8 @@ exports.handleVerify = functions.https.onCall( async (data, context) => {
     });
     return `true`;
 });
+
+
+
 
 
